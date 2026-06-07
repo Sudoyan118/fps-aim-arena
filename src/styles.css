@@ -221,6 +221,26 @@ h2 {
   font-size: 13px;
 }
 
+.sensitivity-control {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px 12px;
+  align-items: center;
+  color: #d8f8ff;
+  font-size: 14px;
+}
+
+.sensitivity-control strong {
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+
+.sensitivity-control input {
+  grid-column: 1 / -1;
+  width: 100%;
+  accent-color: #36e1c0;
+}
+
 button {
   min-height: 42px;
   border: 0;

@@ -93,6 +93,11 @@ app.innerHTML = `
         <span>Shift Dash</span><span>F Challenge</span><span>1-4 Target Modes</span><span>Q/E Difficulty</span>
         <span>R Reset</span><span>Tab Stats</span><span>C Crosshair</span><span>Esc Unlock</span>
       </div>
+      <label class="sensitivity-control">
+        <span>Mouse Sensitivity</span>
+        <strong data-testid="sensitivity-value">1.00x</strong>
+        <input data-testid="sensitivity-slider" type="range" min="0.4" max="2.5" step="0.05" value="1" autocomplete="off" />
+      </label>
       <button data-testid="timer-toggle">Challenge Timer: 30s</button>
       <button data-testid="start-button">Click to Start</button>
     </div>
@@ -143,6 +148,7 @@ let fpsAccumulator = 0;
 let fpsFrames = 0;
 let fpsValue = 0;
 let crosshairIndex = 0;
+let aimSensitivity = 1;
 let statsVisible = true;
 let toastTimeout = 0;
 let activePointer = false;
@@ -159,6 +165,8 @@ let stats: SessionStats = freshStats();
 const els = {
   overlay: document.querySelector<HTMLElement>('[data-testid="start-overlay"]')!,
   start: document.querySelector<HTMLButtonElement>('[data-testid="start-button"]')!,
+  sensitivitySlider: document.querySelector<HTMLInputElement>('[data-testid="sensitivity-slider"]')!,
+  sensitivityValue: document.querySelector<HTMLElement>('[data-testid="sensitivity-value"]')!,
   timerToggle: document.querySelector<HTMLButtonElement>('[data-testid="timer-toggle"]')!,
   results: document.querySelector<HTMLElement>('[data-testid="results"]')!,
   retry: document.querySelector<HTMLButtonElement>('[data-testid="retry-button"]')!,
@@ -539,6 +547,7 @@ function writeDebugState() {
   const height = window.innerHeight;
   (window as any).__aimArena = {
     player: { x: player.position.x, y: player.position.y, z: player.position.z, yaw: player.yaw, pitch: player.pitch, sprint: player.isSprinting },
+    aimSensitivity,
     stats: { ...stats, reactionTimes: [...stats.reactionTimes] },
     difficulty: difficulties[difficultyIndex],
     targetMode,
@@ -593,6 +602,13 @@ function setCrosshair() {
   if (crosshairIndex === 2) els.crosshair.classList.add('dot');
 }
 
+function setAimSensitivity(value: number) {
+  aimSensitivity = THREE.MathUtils.clamp(value, 0.4, 2.5);
+  els.sensitivitySlider.value = aimSensitivity.toFixed(2);
+  els.sensitivityValue.textContent = `${aimSensitivity.toFixed(2)}x`;
+  writeDebugState();
+}
+
 window.addEventListener('resize', onResize);
 window.addEventListener('keydown', (event) => {
   if (event.code === 'Tab') event.preventDefault();
@@ -616,8 +632,9 @@ window.addEventListener('keyup', (event) => keys.delete(event.code));
 window.addEventListener('mousemove', (event) => {
   updatePointerFromEvent(event);
   if (!activePointer && document.pointerLockElement !== renderer.domElement) return;
-  player.yaw -= event.movementX * 0.0022;
-  player.pitch -= event.movementY * 0.0022;
+  const lookSpeed = 0.0022 * aimSensitivity;
+  player.yaw -= event.movementX * lookSpeed;
+  player.pitch -= event.movementY * lookSpeed;
   player.pitch = THREE.MathUtils.clamp(player.pitch, -1.22, 1.05);
 });
 window.addEventListener('mousedown', (event) => {
@@ -637,6 +654,9 @@ els.start.addEventListener('click', async () => {
     activePointer = true;
   }
 });
+els.sensitivitySlider.addEventListener('input', () => {
+  setAimSensitivity(Number(els.sensitivitySlider.value));
+});
 els.retry.addEventListener('click', () => {
   sessionMode = 'Challenge';
   resetSession();
@@ -650,6 +670,7 @@ els.practice.addEventListener('click', () => {
 
 renderer.domElement.dataset.testid = 'game-canvas';
 buildArena();
+setAimSensitivity(1);
 spawnTarget();
 updateHud();
 animate();

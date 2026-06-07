@@ -13,6 +13,7 @@ Public URL: https://sudoyan118.github.io/fps-aim-arena/
 - Center crosshair with three styles, hit/miss feedback, Raycaster hit detection, and lightweight ring effects.
 - Static, moving, popup, and mixed target modes.
 - Practice mode and timed challenge mode with 30s/60s timer selection.
+- Start-screen mouse sensitivity slider from 0.40x to 2.50x.
 - Easy, Normal, Hard, and Expert difficulties that change target size, spawn interval, lifetime, movement speed, and simultaneous targets.
 - HUD with mode, difficulty, timer, FPS, score, hits, misses, accuracy, combo, max combo, reaction times, hits per minute, and expired targets.
 - GitHub Actions workflow for automatic GitHub Pages deployment from `main`.
@@ -23,6 +24,7 @@ Public URL: https://sudoyan118.github.io/fps-aim-arena/
 | --- | --- |
 | WASD | Move |
 | Mouse move | Look |
+| Start slider | Adjust mouse sensitivity |
 | Left click | Hit/select target |
 | Space | Jump |
 | Shift | Dash |
@@ -86,4 +88,3 @@ Screenshots:
 
 - `public/screenshots/arena-preview.png`
 - `.playwright-cli/page-2026-06-07T07-41-29-330Z.png` for portrait visual QA
-
